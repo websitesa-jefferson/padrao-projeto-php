@@ -18,7 +18,7 @@ Este repositório fornecerá exemplos dos padrões de projetos mais utilizados, 
 ■ Factory Method;
 ■ Abstract Factory;
 ■ Builder;
-■ Propotype;
+■ Prototype;
 ■ Singleton.
 ~~~~
 
@@ -45,5 +45,5 @@ Este repositório fornecerá exemplos dos padrões de projetos mais utilizados, 
 ■ Observer;
 ■ State;
 ■ Strategy;
-■ Visitor;
+■ Visitor.
 ~~~~
