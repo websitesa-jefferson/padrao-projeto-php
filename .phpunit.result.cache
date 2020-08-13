@@ -1,1 +1,0 @@
-C:37:"PHPUnit\Runner\DefaultTestResultCache":260:{a:2:{s:7:"defects";a:2:{s:37:"App\AppTest::testTestarClasseFunciona";i:4;s:43:"App\tests\AppTest::testTestarClasseFunciona";i:4;}s:5:"times";a:2:{s:37:"App\AppTest::testTestarClasseFunciona";d:0.005;s:43:"App\tests\AppTest::testTestarClasseFunciona";d:0.005;}}}
