@@ -6,13 +6,15 @@ A classe está aberta para expansão e fechada para alteração.
 
 Sempre que precisarmos criar um novo recurso, devemos criar uma nova classe que implemente esse recurso.
 
-##### Ferindo o princípio aberto-fechado
+#### Ferindo o princípio aberto-fechado
 Criaremos uma classe de sistema tributário simplificado.
 ~~~~
 <?php
 
 class Impostometro
 {
+    public $valor_impostos;
+
     public function somar($item)
     {
         if ($item instanceof Produto) {
@@ -38,6 +40,8 @@ class ProdutoImportado extends Produto
 
 class Impostometro
 {
+    public $valor_impostos;
+
     public function somar($item)
     {
         if ($item instanceof Produto) {
@@ -55,7 +59,7 @@ class Impostometro
 ~~~~
 Para inserir o novo imposto, foi preciso alterar a classe Impostometro, porém, a classe deve estar fechada para alteração.
 
-##### Aplicando o princípio aberto-fechado (utilizando o design pattern Stategy)
+#### Aplicando o princípio aberto-fechado (utilizando o design pattern Strategy)
 ~~~~
 <?php
 
