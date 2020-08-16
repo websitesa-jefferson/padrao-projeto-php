@@ -1,4 +1,4 @@
-## 1 - SEGREGATION INTERFACE PRINCIPLE (PRINCÍPIO DE SEGREGAÇÃO DE INTERFACE)
+## 4 - SEGREGATION INTERFACE PRINCIPLE (PRINCÍPIO DE SEGREGAÇÃO DE INTERFACE)
 
 O quarto princípio diz que muitas interfaces específicas são melhores que uma única interface para não forçar uma classe a implementar um método que ela não vai usar.
 
