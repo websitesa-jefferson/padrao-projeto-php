@@ -38,7 +38,7 @@ class Report
 Nesse exemplo, a classe tem duas responsabilidades:
 
 - Trazer os dados do relatório.
-- Formatar o relatório para o formato JSON.
+- Formatar o relatório para JSON.
 
 ##### Aplicando o princípio da responsabilidade única
 ~~~~
