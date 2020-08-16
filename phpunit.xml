@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <phpunit boostrap="./vendor/autoload.php">
   <testsuites>
-    <testsuite name="My Test Suite">
+    <testsuite name="Testes Jefferson Patterns">
       <directory>./tests</directory>
     </testsuite>
   </testsuites>

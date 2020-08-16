@@ -1,6 +1,6 @@
 <?php
 
-namespace App\criacao;
+namespace Jefferson\Patterns\Singleton;
 
 /**
  * Se precisar de suporte a vários tipos de singletons em seu aplicativo, você pode
