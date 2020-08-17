@@ -8,7 +8,7 @@
     ],
     "autoload": {
       "psr-4": {
-        "Jefferson\\Patterns\\": "src"
+        "App\\": "src/"
       }
     },
     "require": {},
