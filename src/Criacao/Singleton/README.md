@@ -48,7 +48,7 @@ E também vamos criar um método estático getInstance que vai ser o único resp
 ~~~~
 <?php
 
-class Log
+class LogSingleton
 {
     private static $instance;
 
@@ -73,11 +73,11 @@ class Log
     }
 }
 
-$log1 = Log::getInstance();
-$log2 = Log::getInstance();
-$log3 = Log::getInstance();
-$log4 = Log::getInstance();
-$log5 = Log::getInstance();
+$log1 = LogSingleton::getInstance();
+$log2 = LogSingleton::getInstance();
+$log3 = LogSingleton::getInstance();
+$log4 = LogSingleton::getInstance();
+$log5 = LogSingleton::getInstance();
 
 var_dump($log1); // object(Log)#1 (0) {}
 var_dump($log2); // object(Log)#1 (0) {}
@@ -85,6 +85,6 @@ var_dump($log3); // object(Log)#1 (0) {}
 var_dump($log4); // object(Log)#1 (0) {}
 var_dump($log5); // object(Log)#1 (0) {}
 ~~~~
-Se executarmos o exemplo acima, poderemos ver que a cada nova chamada da classe Log, nós criamos uma nova instância, indo de #1 até #5.
+Se executarmos o exemplo acima, poderemos ver que a cada nova chamada da classe LogSingleton, nós utilizamos a mesma instância #1.
 
 https://imasters.com.br/back-end/o-padrao-singleton-com-php

@@ -7,7 +7,7 @@ require __DIR__.'/../../bootstrap.php';
 
 echo '<pre>';
 
-echo '<b>Instâncias de Log sem Singleton</b><br><br>';
+echo '<b>Instâncias de Log()</b><br><br>';
 $log1 = new Log;
 $log2 = new Log;
 $log3 = new Log;
@@ -22,7 +22,7 @@ var_dump($log5);
 
 echo '<br><br>';
 
-echo '<b>Instâncias de Log com Singleton</b><br><br>';
+echo '<b>Instâncias de LogSingleton()</b><br><br>';
 $log1 = LogSingleton::getInstance();
 $log2 = LogSingleton::getInstance();
 $log3 = LogSingleton::getInstance();

@@ -2,8 +2,14 @@
 
 namespace App\Criacao\Singleton;
 
+/**
+ * @internal Classe com o padrão Singleton
+ */
 class LogSingleton
 {
+    /**
+     * @var  Classe com o padrão Singleton
+     */
     private static $instance;
 
     private function __construct()
