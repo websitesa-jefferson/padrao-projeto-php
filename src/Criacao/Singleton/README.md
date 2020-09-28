@@ -87,4 +87,4 @@ var_dump($log5); // object(Log)#1 (0) {}
 ~~~~
 Se executarmos o exemplo acima, poderemos ver que a cada nova chamada da classe LogSingleton, nós utilizamos a mesma instância #1.
 
-https://imasters.com.br/back-end/o-padrao-singleton-com-php
+Fonte: https://imasters.com.br/back-end/o-padrao-singleton-com-php
