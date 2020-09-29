@@ -29,6 +29,7 @@ $log3 = new Log;
 $log4 = new Log;
 $log5 = new Log;
 
+Resultado da execução:
 var_dump($log1); // object(Log)#1 (0) {}
 var_dump($log2); // object(Log)#2 (0) {}
 var_dump($log3); // object(Log)#3 (0) {}
@@ -45,6 +46,7 @@ Com isso, garantimos que a classe não pode ser mais instanciada de forma normal
 
 E também vamos criar um método estático getInstance que vai ser o único responsável por retornar a nova instância da nossa classe.
 É neste método que vamos verificar se já existe uma instância na nossa classe.
+
 ~~~~
 <?php
 
@@ -79,6 +81,7 @@ $log3 = LogSingleton::getInstance();
 $log4 = LogSingleton::getInstance();
 $log5 = LogSingleton::getInstance();
 
+Resultado da execução:
 var_dump($log1); // object(Log)#1 (0) {}
 var_dump($log2); // object(Log)#1 (0) {}
 var_dump($log3); // object(Log)#1 (0) {}
