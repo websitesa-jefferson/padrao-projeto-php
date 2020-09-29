@@ -7,9 +7,9 @@ use App\Criacao\AbstractFactory\ConcreteFactory2;
 require __DIR__.'/../../bootstrap.php';
 
 /**
- * O código do cliente funciona com fábricas e produtos apenas por meio de resumo
- * tipos: AbstractFactory e AbstractProduct. Isso permite que você passe por qualquer fábrica ou
- * subclasse do produto para o código do cliente sem quebrá-lo.
+ * O código do cliente funciona com fábricas e produtos apenas por meio de resumo.
+ * tipos: AbstractFactory e AbstractProduct.
+ * Isso permite que você passe por qualquer fábrica ou subclasse do produto para o código do cliente sem quebrá-lo.
  */
 function clientCode(AbstractFactory $factory)
 {

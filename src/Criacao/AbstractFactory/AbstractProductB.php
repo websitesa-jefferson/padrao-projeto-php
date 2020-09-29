@@ -17,8 +17,7 @@ interface AbstractProductB
     /**
      * ... mas também pode colaborar com o ProdutoA.
      *
-     * A Abstract Factory certifica-se de que todos os produtos que cria são da
-     * mesma variante e, portanto, compatível.
+     * A Abstract Factory certifica-se de que todos os produtos que cria são da mesma variante e, portanto, compatível.
      */
     public function anotherUsefulFunctionB(AbstractProductA $collaborator): string;
 }
