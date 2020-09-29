@@ -43,18 +43,18 @@ class ConcreteBuilder1 implements Builder
 
     /**
      * Os construtores concretos devem fornecer seus próprios métodos para recuperação de resultados.
-     * Isso porque vários tipos de construtores podem criar produtos totalmente diferentes que não seguem a mesma interface.
-     * Portanto, esses métodos não podem ser declarados na interface do Builder base
-     * (pelo menos em uma linguagem de programação digitada estaticamente). Observe que o PHP é um
-     * linguagem digitada dinamicamente e este método PODE estar na interface base.
+     * Isso porque vários tipos de construtores podem criar produtos totalmente diferentes que não seguem a mesma
+     * interface.
+     * Portanto, esses métodos não podem ser declarados na interface do Builder base (pelo menos em uma linguagem de
+     * programação digitada estaticamente).
+     * Observe que o PHP é um linguagem digitada dinamicamente e este método PODE estar na interface base.
      * No entanto, não o declararemos lá por uma questão de clareza.
      *
-     * Normalmente, após retornar o resultado final ao cliente, uma instância do construtor
-     * deverá estar pronto para iniciar a produção de outro produto. É por isso
-     * é uma prática comum chamar o método de redefinição no final do
-     * Corpo do método `getProduct`. No entanto, esse comportamento não é obrigatório e
-     * você pode fazer seus construtores esperarem por uma chamada de reconfiguração explícita do
-     * código do cliente antes de descartar o resultado anterior.
+     * Normalmente, após retornar o resultado final ao cliente, uma instância do construtor deverá estar pronto para
+     * iniciar a produção de outro produto.
+     * É por isso é uma prática comum chamar o método de redefinição no final do Corpo do método `getProduct`.
+     * No entanto, esse comportamento não é obrigatório e você pode fazer seus construtores esperarem por uma chamada
+     * de reconfiguração explícita do código do cliente antes de descartar o resultado anterior.
      */
     public function getProduct(): Product1
     {

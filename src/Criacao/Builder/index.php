@@ -6,7 +6,7 @@ use App\Criacao\Builder\ConcreteBuilder1;
 require __DIR__.'/../../bootstrap.php';
 
 /**
- * O código do cliente cria um objeto construtor, passa-o para o diretor e então inicia o processo de construção.
+ * O código do cliente cria um objeto construtor, passo-a-passo para o diretor e então inicia o processo de construção.
  * O resultado final é recuperado do objeto construtor.
  */
 function clientCode(Director $director)
