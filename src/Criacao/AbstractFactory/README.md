@@ -185,4 +185,15 @@ echo "<br><br>";
 echo "Cliente: Testando o mesmo código de cliente com o segundo tipo de fábrica:";
 echo "<br>";
 clientCode(new ConcreteFactory2());
+
+Resultado da execução:
+Cliente: Testando o código do cliente com o primeiro tipo de fábrica:
+O resultado do produto B1.
+O resultado do B1 colaborando com o (O resultado do produto A1.)
+
+Cliente: Testando o mesmo código de cliente com o segundo tipo de fábrica:
+O resultado do produto B2.
+O resultado do B2 colaborando com o (O resultado do produto A2.)
 ~~~~
+
+Fonte: https://refactoring.guru/pt-br/design-patterns/abstract-factory/php/example#lang-features
