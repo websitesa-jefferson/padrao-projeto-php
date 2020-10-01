@@ -17,169 +17,151 @@ Sistema capaz de gerar ações indeterminadas para uma única aplicação, utili
 
 ~~~~
 /**
- * A interface Builder especifica métodos para criar as diferentes partes dos objetos Product.
+ * A interface Builder declara um conjunto de métodos para montar uma consulta SQL.
+ * Todas as etapas de construção estão retornando o objeto construtor atual para permitir o encadeamento:
+ * $ builder-> select (...) -> where (...)
  */
-interface Builder
+interface SQLQueryBuilder
 {
-    public function producePartA(): void;
+    public function select(string $table, array $fields): SQLQueryBuilder;
 
-    public function producePartB(): void;
+    public function where(string $field, string $value, string $operator = '='): SQLQueryBuilder;
 
-    public function producePartC(): void;
+    public function limit(int $start, int $offset): SQLQueryBuilder;
+
+    // +100 outros métodos de sintaxe SQL ...
+
+    public function getSQL(): string;
 }
 
 /**
- * As classes Concrete Builder seguem a interface Builder e fornecem implementações específicas das etapas de construção.
- * Seu programa pode ter N variações de Builders, implementadas de forma diferente.
+ * Cada construtor concreto corresponde a um dialeto SQL específico e pode implementar os passos do construtor um pouco
+ * diferente dos outros.
+ * Este construtor concreto pode construir consultas SQL compatíveis com MySQL.
  */
-class ConcreteBuilder1 implements Builder
+class MysqlQueryBuilder implements SQLQueryBuilder
 {
-    private $product;
+    protected $query;
+
+    protected function reset(): void
+    {
+        $this->query = new \stdClass();
+    }
 
     /**
-     * Uma nova instância do construtor deve conter um objeto de produto em branco, que é usado na montagem posterior.
+     * Crie uma consulta SELECT de base.
      */
-    public function __construct()
+    public function select(string $table, array $fields): SQLQueryBuilder
     {
         $this->reset();
-    }
+        $this->query->base = "SELECT " . implode(", ", $fields) . " FROM " . $table;
+        $this->query->type = 'select';
 
-    public function reset(): void
-    {
-        $this->product = new Product1();
-    }
-
-    /**
-     * Todas as etapas de produção funcionam com a mesma instância do produto.
-     */
-    public function producePartA(): void
-    {
-        $this->product->parts[] = "PartA1";
-    }
-
-    public function producePartB(): void
-    {
-        $this->product->parts[] = "PartB1";
-    }
-
-    public function producePartC(): void
-    {
-        $this->product->parts[] = "PartC1";
+        return $this;
     }
 
     /**
-     * Os construtores concretos devem fornecer seus próprios métodos para recuperação de resultados.
-     * Isso porque vários tipos de construtores podem criar produtos totalmente diferentes que não seguem a mesma
-     * interface.
-     * Portanto, esses métodos não podem ser declarados na interface do Builder base (pelo menos em uma linguagem de
-     * programação digitada estaticamente).
-     * Observe que o PHP é um linguagem digitada dinamicamente e este método PODE estar na interface base.
-     * No entanto, não o declararemos lá por uma questão de clareza.
-     *
-     * Normalmente, após retornar o resultado final ao cliente, uma instância do construtor deverá estar pronto para
-     * iniciar a produção de outro produto.
-     * É por isso é uma prática comum chamar o método de redefinição no final do Corpo do método `getProduct`.
-     * No entanto, esse comportamento não é obrigatório e você pode fazer seus construtores esperarem por uma chamada
-     * de reconfiguração explícita do código do cliente antes de descartar o resultado anterior.
+     * Adicione uma condição WHERE.
      */
-    public function getProduct(): Product1
+    public function where(string $field, string $value, string $operator = '='): SQLQueryBuilder
     {
-        $result = $this->product;
-        $this->reset();
+        if (!in_array($this->query->type, ['select', 'update', 'delete'])) {
+            throw new \Exception("WHERE só pode ser adicionado a SELECT, UPDATE OR DELETE");
+        }
+        $this->query->where[] = "$field $operator '$value'";
 
-        return $result;
+        return $this;
+    }
+
+    /**
+     * Adicione uma restrição LIMIT.
+     */
+    public function limit(int $start, int $offset): SQLQueryBuilder
+    {
+        if (!in_array($this->query->type, ['select'])) {
+            throw new \Exception("LIMIT can only be added to SELECT");
+        }
+        $this->query->limit = " LIMIT " . $start . ", " . $offset;
+
+        return $this;
+    }
+
+    /**
+     * Obtenha a string de consulta final.
+     */
+    public function getSQL(): string
+    {
+        $query = $this->query;
+        $sql = $query->base;
+        if (!empty($query->where)) {
+            $sql .= " WHERE " . implode(' AND ', $query->where);
+        }
+        if (isset($query->limit)) {
+            $sql .= $query->limit;
+        }
+        $sql .= ";";
+        return $sql;
     }
 }
 
 /**
- * Faz sentido usar o padrão Builder apenas quando seus produtos são bastante complexos e exigem configuração extensiva.
+ * Este Concrete Builder é compatível com PostgreSQL.
+ * Embora o Postgres seja muito semelhante ao Mysql, ainda tem vários diferenças.
+ * Para reutilizar o código comum, nós o estendemos do construtor MySQL, enquanto sobrescrevemos algumas das etapas de construção.
+ */
+class PostgresQueryBuilder extends MysqlQueryBuilder
+{
+    /**
+     * Entre outras coisas, o PostgreSQL tem uma sintaxe LIMIT ligeiramente diferente.
+     */
+    public function limit(int $start, int $offset): SQLQueryBuilder
+    {
+        parent::limit($start, $offset);
+
+        $this->query->limit = " LIMIT " . $start . " OFFSET " . $offset;
+
+        return $this;
+    }
+}
+
+/**
+ * Observe que o código do cliente usa o objeto construtor diretamente.
+ * Uma classe Director designada não é necessária neste caso, porque o código do cliente quase precisa de consultas
+ * diferentes todas as vezes, então a sequência das etapas de construção não pode ser facilmente reutilizada.
  *
- * Ao contrário de outros padrões de criação, diferentes construtores concretos podem produzir produtos não relacionados.
- * Em outras palavras, os resultados de vários construtores nem sempre seguem a mesma interface.
+ * Como todos os nossos construtores de consulta criam produtos do mesmo tipo (que é uma string), podemos interagir com
+ * todos os construtores usando sua interface comum.
+ * Posteriormente, se implementarmos uma nova classe Builder, seremos capazes de passar sua instância para o código do
+ * cliente existente sem quebrando-o graças à interface SQLQueryBuilder.
  */
-class Product1
+function clientCode(SQLQueryBuilder $queryBuilder)
 {
-    public $parts = [];
+    $query = $queryBuilder
+        ->select("users", ["name", "email", "password"])
+        ->where("age", 18, ">")
+        ->where("age", 30, "<")
+        ->limit(10, 20)
+        ->getSQL();
 
-    public function listParts(): void
-    {
-        echo "Peças do produto: " . implode(', ', $this->parts) . "<br><br>";
-    }
+    echo $query;
 }
 
 /**
- * O Diretor é responsável apenas por executar as etapas de construção em uma sequência particular.
- * É útil ao produzir produtos de acordo com um pedido ou configuração específica.
- * A rigor, a classe Director é opcional, pois o cliente pode controlar os construtores diretamente.
+ * O aplicativo seleciona o tipo de construtor de consulta adequado, dependendo da configuração atual ou das configurações do ambiente.
  */
-class Director
-{
-    /**
-     * @var Builder
-     */
-    private $builder;
+// if ($_ENV['database_type'] == 'postgres') {
+//     $builder = new PostgresQueryBuilder(); } else {
+//     $builder = new MysqlQueryBuilder(); }
+//
+// clientCode($builder);
 
-    /**
-     * O Director funciona com qualquer instância do construtor que o código do cliente passa para ele.
-     * Desta forma, o código do cliente pode alterar o tipo final do produto recém-montado.
-     */
-    public function setBuilder(Builder $builder): void
-    {
-        $this->builder = $builder;
-    }
+echo "Testando o construtor de consulta MySQL:<br>";
+clientCode(new MysqlQueryBuilder());
 
-    /**
-     * O Diretor pode construir várias variações de produto usando as mesmas etapas de construção.
-     */
-    public function buildMinimalViableProduct(): void
-    {
-        $this->builder->producePartA();
-    }
+echo "<br><br>";
 
-    public function buildFullFeaturedProduct(): void
-    {
-        $this->builder->producePartA();
-        $this->builder->producePartB();
-        $this->builder->producePartC();
-    }
-}
-
-/**
- * O código do cliente cria um objeto construtor, passo-a-passo para o diretor e então inicia o processo de construção.
- * O resultado final é recuperado do objeto construtor.
- */
-function clientCode(Director $director)
-{
-    $builder = new ConcreteBuilder1();
-    $director->setBuilder($builder);
-
-    echo "Produto básico padrão:<br>";
-    $director->buildMinimalViableProduct();
-    $builder->getProduct()->listParts();
-
-    echo "Produto padrão completo:<br>";
-    $director->buildFullFeaturedProduct();
-    $builder->getProduct()->listParts();
-
-    // Lembre-se de que o padrão Builder pode ser usado sem uma classe Director.
-    echo "Custom product:<br>";
-    $builder->producePartA();
-    $builder->producePartC();
-    $builder->getProduct()->listParts();
-}
-
-$director = new Director();
-clientCode($director);
-
-Resultado da execução:
-Produto básico padrão:
-Peças do produto: PartA1
-
-Produto padrão completo:
-Peças do produto: PartA1, PartB1, PartC1
-
-Custom product:
-Peças do produto: PartA1, PartC1
+echo "Testando o construtor de consulta PostgresSQL:<br>";
+clientCode(new PostgresQueryBuilder());
 ~~~~
 
 Fonte: https://refactoring.guru/pt-br/design-patterns/builder/php/example#lang-features
