@@ -7,9 +7,9 @@ Espeficiar tipos de objetos através de uma instância-protótipo e criar novos 
 Permite a implementação de variações de uma classe sem o uso de subclasses, através da criação de instâncias-protótipo com características específicas pré-definidas.
 
 ##### Estrutura
-Prototype: declara uma interface para autoclonagem;
-ConcretePrototype: implementa a operação da autoclonagem;
-Cliente: cria objetos solicitando um clone a protótipo.
+- Prototype: declara uma interface para autoclonagem;
+- ConcretePrototype: implementa a operação da autoclonagem;
+- Cliente: cria objetos solicitando um clone a protótipo.
 
 ##### Aplicabilidade
 - As classes a serem instanciadas são especificadas em tempo de execução;

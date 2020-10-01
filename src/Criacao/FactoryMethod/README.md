@@ -8,10 +8,10 @@ Sistemas que manipulam um número variável de tipos de objetos podem utilizar e
 Permite que a aplicação final implemente o suporte aos objetos necessários.
 
 ##### Estrutura
-Product: define as interfaces dos objetos criados por este padrão;
-ConcreteProduct: implementa a interface do produto;
-Creator: declara o método que retorna o objeto do tipo esperado;
-ConcreteCreator: sobreescreve o método original para retornar uma instancia do objeto esperado, ou seja, o ConcreteProduct.
+- Product: define as interfaces dos objetos criados por este padrão;
+- ConcreteProduct: implementa a interface do produto;
+- Creator: declara o método que retorna o objeto do tipo esperado;
+- ConcreteCreator: sobreescreve o método original para retornar uma instancia do objeto esperado, ou seja, o ConcreteProduct.
 
 ##### Aplicabilidade
 - A aplicação não pode antecipar o tipos de objetos que devem se criados;

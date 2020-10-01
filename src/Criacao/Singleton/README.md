@@ -7,7 +7,7 @@ Garantir que uma classe tenha somente uma instância e fornecer um ponto global 
 Restringir o acesso a recursos limitados e compartilhados pelo sistema, exemplo: classe de log.
 
 ##### Estrutura
-Possui apenas um item chamado Singleton.
+- Possui apenas um item chamado Singleton.
 
 ##### Aplicabilidade
 - Quando deve haver somente uma instância dessa classe em qualquer ponto do sistema.
