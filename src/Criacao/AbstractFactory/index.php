@@ -1,33 +1,18 @@
 <?php
 
-use App\Criacao\AbstractFactory\AbstractFactory;
-use App\Criacao\AbstractFactory\ConcreteFactory1;
-use App\Criacao\AbstractFactory\ConcreteFactory2;
+
+use App\Criacao\AbstractFactory\Page;
+use App\Criacao\AbstractFactory\PHPTemplateFactory;
 
 require __DIR__.'/../../bootstrap.php';
 
 /**
- * O código do cliente funciona com fábricas e produtos apenas por meio de resumo.
- * tipos: AbstractFactory e AbstractProduct.
- * Isso permite que você passe por qualquer fábrica ou subclasse do produto para o código do cliente sem quebrá-lo.
+ * Agora, em outras partes do aplicativo, o código do cliente pode aceitar objetos de fábrica de qualquer tipo.
  */
-function clientCode(AbstractFactory $factory)
-{
-    $productA = $factory->createProductA();
-    $productB = $factory->createProductB();
+$page = new Page('Página de exemplo', 'Este é o corpo.');
 
-    echo $productB->usefulFunctionB();
-    echo "<br>";
-    echo $productB->anotherUsefulFunctionB($productA);
-}
+echo "Testando a renderização real com a fábrica PHPTemplate:<br>";
+echo $page->render(new PHPTemplateFactory());
 
-/**
- * O código do cliente pode funcionar com qualquer classe de fábrica concreta.
- */
-echo "Cliente: Testando o código do cliente com o primeiro tipo de fábrica:";
-echo "<br>";
-clientCode(new ConcreteFactory1());
-echo "<br><br>";
-echo "Cliente: Testando o mesmo código de cliente com o segundo tipo de fábrica:";
-echo "<br>";
-clientCode(new ConcreteFactory2());
+// Descomente o seguinte se você tiver o Twig instalado.
+// echo "Teste de renderização com a fábrica Twig:<br>"; echo $page->render(new TwigTemplateFactory());

@@ -21,179 +21,223 @@ Produtos portáveis utilizam o conceito abstrato deste padrão para desvincular 
 
 ~~~~
 /**
- * A interface Abstract Factory declara um conjunto de métodos que retornam diferentes produtos abstratos.
- * Esses produtos são chamados de família e são relacionado por um tema ou conceito de alto nível.
- * Produtos de uma família geralmente são capazes de colaborar entre si.
- * Uma família de produtos pode ter N variantes, porém produtos de uma variante são incompatíveis com produtos de outro.
+ * A interface Abstract Factory declara métodos de criação para cada tipo de produto distinto.
  */
-interface AbstractFactory
+interface TemplateFactory
 {
-    public function createProductA(): AbstractProductA;
+    public function createTitleTemplate(): TitleTemplate;
 
-    public function createProductB(): AbstractProductB;
+    public function createPageTemplate(): PageTemplate;
+
+    public function getRenderer(): TemplateRenderer;
 }
 
 /**
- * As fábricas concretas produzem uma família de produtos que pertencem a uma única variante.
- * A fábrica garante que os produtos resultantes são compatíveis.
- * Note que as assinaturas dos métodos da Fábrica da Concreta retornam um produto abstrato, enquanto dentro do método
- * um produto concreto é instanciado.
+ * Cada fábrica concreta corresponde a uma variante (ou família) específica de produtos.
+ * Esta fábrica concreta cria modelos Twig.
  */
-class ConcreteFactory1 implements AbstractFactory
+class TwigTemplateFactory implements TemplateFactory
 {
-    public function createProductA(): AbstractProductA
+    public function createTitleTemplate(): TitleTemplate
     {
-        return new ConcreteProductA1();
+        return new TwigTitleTemplate();
     }
 
-    public function createProductB(): AbstractProductB
+    public function createPageTemplate(): PageTemplate
     {
-        return new ConcreteProductB1();
-    }
-}
-
-/**
- * Cada fábrica de concreto possui uma variante de produto correspondente.
- */
-class ConcreteFactory2 implements AbstractFactory
-{
-    public function createProductA(): AbstractProductA
-    {
-        return new ConcreteProductA2();
+        return new TwigPageTemplate($this->createTitleTemplate());
     }
 
-    public function createProductB(): AbstractProductB
+    public function getRenderer(): TemplateRenderer
     {
-        return new ConcreteProductB2();
+        return new TwigRenderer();
     }
 }
 
 /**
- * Cada produto distinto de uma família de produtos deve ter uma interface básica.
- * variantes do produto devem implementar esta interface.
+ * E esta fábrica concreta cria modelos de PHPTemplate.
  */
-interface AbstractProductA
+class PHPTemplateFactory implements TemplateFactory
 {
-    public function usefulFunctionA(): string;
-}
-
-/**
- * Produtos concretos são criados por fábricas concretas correspondentes.
- */
-class ConcreteProductA1 implements AbstractProductA
-{
-    public function usefulFunctionA(): string
+    public function createTitleTemplate(): TitleTemplate
     {
-        return "O resultado do produto A1.";
+        return new PHPTemplateTitleTemplate();
+    }
+
+    public function createPageTemplate(): PageTemplate
+    {
+        return new PHPTemplatePageTemplate($this->createTitleTemplate());
+    }
+
+    public function getRenderer(): TemplateRenderer
+    {
+        return new PHPTemplateRenderer();
     }
 }
 
 /**
- * Produtos concretos são criados por fábricas concretas correspondentes.
+ * Cada tipo de produto distinto deve ter uma interface separada.
+ * Todas as variantes do produto devem seguir a mesma interface.
+ * Por exemplo, esta interface de Produto Abstrato descreve o comportamento dos modelos de título de página.
  */
-class ConcreteProductA2 implements AbstractProductA
+interface TitleTemplate
 {
-    public function usefulFunctionA(): string
+    public function getTemplateString(): string;
+}
+
+/**
+ * Este produto concreto fornece modelos de título de página Twig.
+ */
+class TwigTitleTemplate implements TitleTemplate
+{
+    public function getTemplateString(): string
     {
-        return "O resultado do produto A2.";
+        return "<h1>{{ title }}</h1>";
     }
 }
 
 /**
- * Esta é a interface básica de outro produto.
- * Todos os produtos podem interagir entre si, mas a interação adequada só é possível entre produtos de a mesma variante
- * concreta.
+ * E este produto concreto fornece modelos de título de página do PHPTemplate.
  */
-interface AbstractProductB
+class PHPTemplateTitleTemplate implements TitleTemplate
 {
-    /**
-     * O produto B é capaz de fazer suas próprias coisas ...
-     */
-    public function usefulFunctionB(): string;
-
-    /**
-     * ... mas também pode colaborar com o ProdutoA.
-     *
-     * A Abstract Factory certifica-se de que todos os produtos que cria são da mesma variante e, portanto, compatível.
-     */
-    public function anotherUsefulFunctionB(AbstractProductA $collaborator): string;
-}
-
-/**
- * Produtos concretos são criados por fábricas concretas correspondentes.
- */
-class ConcreteProductB1 implements AbstractProductB
-{
-    public function usefulFunctionB(): string
+    public function getTemplateString(): string
     {
-        return "O resultado do produto B1.";
-    }
-
-    /**
-     * A variante, Produto B1, só funciona corretamente com a variante, Produto A1.
-     * No entanto, ele aceita qualquer instância de AbstractProductA como um argumento.
-     */
-    public function anotherUsefulFunctionB(AbstractProductA $collaborator): string
-    {
-        $result = $collaborator->usefulFunctionA();
-
-        return "O resultado do B1 colaborando com o ({$result})";
-    }
-}
-
-class ConcreteProductB2 implements AbstractProductB
-{
-    public function usefulFunctionB(): string
-    {
-        return "O resultado do produto B2.";
-    }
-
-    /**
-     * A variante, Produto B2, só funciona corretamente com a variante, Produto A2.
-     * No entanto, ele aceita qualquer instância de AbstractProductA como um argumento.
-     */
-    public function anotherUsefulFunctionB(AbstractProductA $collaborator): string
-    {
-        $result = $collaborator->usefulFunctionA();
-
-        return "O resultado do B2 colaborando com o ({$result})";
+        return "<h1><?= \$title ?></h1>";
     }
 }
 
 /**
- * O código do cliente funciona com fábricas e produtos apenas por meio de resumo.
- * tipos: AbstractFactory e AbstractProduct.
- * Isso permite que você passe por qualquer fábrica ou subclasse do produto para o código do cliente sem quebrá-lo.
+ * Este é outro tipo de produto abstrato, que descreve modelos de páginas inteiras.
  */
-function clientCode(AbstractFactory $factory)
+interface PageTemplate
 {
-    $productA = $factory->createProductA();
-    $productB = $factory->createProductB();
-
-    echo $productB->usefulFunctionB();
-    echo "<br>";
-    echo $productB->anotherUsefulFunctionB($productA);
+    public function getTemplateString(): string;
 }
 
 /**
- * O código do cliente pode funcionar com qualquer classe de fábrica concreta.
+ * O modelo de página usa o sub-modelo de título, portanto, temos que fornecer uma maneira de defini-lo no objeto de sub-modelo.
+ * A fábrica de resumo vinculará o modelo de página a um modelo de título da mesma variante.
  */
-echo "Cliente: Testando o código do cliente com o primeiro tipo de fábrica:";
-echo "<br>";
-clientCode(new ConcreteFactory1());
-echo "<br><br>";
-echo "Cliente: Testando o mesmo código de cliente com o segundo tipo de fábrica:";
-echo "<br>";
-clientCode(new ConcreteFactory2());
+abstract class BasePageTemplate implements PageTemplate
+{
+    protected $titleTemplate;
 
-Resultado da execução:
-Cliente: Testando o código do cliente com o primeiro tipo de fábrica:
-O resultado do produto B1.
-O resultado do B1 colaborando com o (O resultado do produto A1.)
+    public function __construct(TitleTemplate $titleTemplate)
+    {
+        $this->titleTemplate = $titleTemplate;
+    }
+}
 
-Cliente: Testando o mesmo código de cliente com o segundo tipo de fábrica:
-O resultado do produto B2.
-O resultado do B2 colaborando com o (O resultado do produto A2.)
+/**
+ * A variante Twig de todos os modelos de página.
+ */
+class TwigPageTemplate extends BasePageTemplate
+{
+    public function getTemplateString(): string
+    {
+        $renderedTitle = $this->titleTemplate->getTemplateString();
+
+        return <<<HTML
+        <div class="page">
+            $renderedTitle
+            <article class="content">{{ content }}</article>
+        </div>
+        HTML;
+    }
+}
+
+/**
+ * A variante PHPTemplate de todos os modelos de página.
+ */
+class PHPPageTemplate extends BasePageTemplate
+{
+    public function getTemplateString(): string
+    {
+        $renderedTitle = $this->titleTemplate->getTemplateString();
+
+        return <<<HTML
+        <div class="page">
+            $renderedTitle
+            <article class="content"><?= \$content ?></article>
+        </div>
+        HTML;
+    }
+}
+
+/**
+ * O renderizador é responsável por converter uma string de template no código HTML real.
+ * Cada renderizador se comporta de maneira diferente e espera que seu próprio tipo de string de modelo seja passado a ele.
+ * Modelos de cozimento com a fábrica permitem que você passe tipos adequados de modelos para renderizações adequadas.
+ */
+interface TemplateRenderer
+{
+    public function render(string $templateString, array $arguments = []): string;
+}
+
+/**
+ * O renderizador para modelos Twig.
+ */
+class TwigRenderer implements TemplateRenderer
+{
+    public function render(string $templateString, array $arguments = []): string
+    {
+        return \Twig::render($templateString, $arguments);
+    }
+}
+
+/**
+ * O renderizador para modelos de PHPTemplate. Observe que esta implementação é muito básica, senão grosseira.
+ * Usar a função `eval` tem muitas implicações de segurança, então use-a com cuidado em projetos reais.
+ */
+class PHPRenderer implements TemplateRenderer
+{
+    public function render(string $templateString, array $arguments = []): string
+    {
+        extract($arguments);
+
+        ob_start();
+        eval(' ?>' . $templateString . '<?php ');
+        $result = ob_get_contents();
+        ob_end_clean();
+
+        return $result;
+    }
+}
+
+/**
+ * O código do cliente.
+ * Observe que ele aceita a classe Abstract Factory como parâmetro, o que permite que o cliente trabalhe com qualquer
+ * tipo de fábrica de concreto.
+ */
+class Page
+{
+    public $title;
+
+    public $content;
+
+    public function __construct($title, $content)
+    {
+        $this->title = $title;
+        $this->content = $content;
+    }
+
+    // Veja como você usaria o modelo na vida real. Observe que a classe de página não depende de nenhum
+    // classes de template concretas.
+    public function render(TemplateFactory $factory): string
+    {
+        $pageTemplate = $factory->createPageTemplate();
+
+        $renderer = $factory->getRenderer();
+
+        return $renderer->render($pageTemplate->getTemplateString(), [
+            'title' => $this->title,
+            'content' => $this->content
+        ]);
+    }
+}
+
+
 ~~~~
 
 Fonte: https://refactoring.guru/pt-br/design-patterns/abstract-factory/php/example#lang-features
