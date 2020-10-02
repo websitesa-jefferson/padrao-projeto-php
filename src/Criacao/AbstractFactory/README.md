@@ -16,7 +16,7 @@ Produtos portáveis utilizam o conceito abstrato deste padrão para desvincular 
 ##### Aplicabilidade
 - Um sistema deve ser independente do modo como seus objetos são criados, compostos e representados;
 - Um sistema deve ser configurado com vários grupos distintos de objetos;
-- Alguns objetos relacionados formam projetados para serem utilizados em conjunto, e você precisa impor essa restrição;
+- Alguns objetos relacionados foram projetados para serem utilizados em conjunto, e você precisa impor essa restrição;
 - Você quer fornecer uma biblioteca de classes e pretende revelar apenas suas interfaces, não suas implementações.
 
 ~~~~
@@ -222,8 +222,8 @@ class Page
         $this->content = $content;
     }
 
-    // Veja como você usaria o modelo na vida real. Observe que a classe de página não depende de nenhum
-    // classes de template concretas.
+    // Veja como você usaria o modelo na vida real.
+    // Observe que a classe de página não depende de nenhum classes de template concretas.
     public function render(TemplateFactory $factory): string
     {
         $pageTemplate = $factory->createPageTemplate();
@@ -237,7 +237,16 @@ class Page
     }
 }
 
+/**
+ * Agora, em outras partes do aplicativo, o código do cliente pode aceitar objetos de fábrica de qualquer tipo.
+ */
+$page = new Page('Página de exemplo', 'Este é o corpo.');
 
+echo "Testando a renderização real com a fábrica PHPTemplate:<br>";
+echo $page->render(new PHPTemplateFactory());
+
+// Descomente o seguinte se você tiver o Twig instalado.
+// echo "Teste de renderização com a fábrica Twig:<br>"; echo $page->render(new TwigTemplateFactory());
 ~~~~
 
 Fonte: https://refactoring.guru/pt-br/design-patterns/abstract-factory/php/example#lang-features

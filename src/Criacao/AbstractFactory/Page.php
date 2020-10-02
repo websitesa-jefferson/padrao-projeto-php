@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Criacao\AbstractFactory;
 
 /**
@@ -20,8 +19,8 @@ class Page
         $this->content = $content;
     }
 
-    // Veja como você usaria o modelo na vida real. Observe que a classe de página não depende de nenhum
-    // classes de template concretas.
+    // Veja como você usaria o modelo na vida real.
+    // Observe que a classe de página não depende de nenhum classes de template concretas.
     public function render(TemplateFactory $factory): string
     {
         $pageTemplate = $factory->createPageTemplate();

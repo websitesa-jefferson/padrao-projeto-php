@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Criacao\AbstractFactory\Page;
 use App\Criacao\AbstractFactory\PHPTemplateFactory;
 
