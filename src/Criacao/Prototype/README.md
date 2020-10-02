@@ -17,81 +17,97 @@ Permite a implementação de variações de uma classe sem o uso de subclasses, 
 
 ~~~~
 /**
- * A classe de exemplo que possui capacidade de clonagem.
- * Veremos como os valores de campo com diferentes tipos serão clonados.
+ * Prototype.
  */
-class Prototype
+class Page
 {
-    public $primitive;
-    public $component;
-    public $circularReference;
+    private $title;
+
+    private $body;
 
     /**
-     * PHP possui suporte embutido para clonagem. Você pode `clonar` um objeto sem definir quaisquer métodos especiais,
-     * desde que possui campos de tipos primitivos.
-     * Os campos que contêm objetos retêm suas referências em um objeto clonado.
-     * Portanto, em alguns casos, você pode querer clonar esses objetos referenciados também.
-     * Você pode fazer isso em um método especial `__clone()`.
+     * @var Author
+     */
+    private $author;
+
+    private $comments = [];
+
+    /**
+     * @var \DateTime
+     */
+    private $date;
+
+    // +100 private fields.
+
+    public function __construct(string $title, string $body, Author $author)
+    {
+        $this->title = $title;
+        $this->body = $body;
+        $this->author = $author;
+        $this->author->addToPage($this);
+        $this->date = new \DateTime();
+    }
+
+    public function addComment(string $comment): void
+    {
+        $this->comments[] = $comment;
+    }
+
+    /**
+     * Você pode controlar quais dados deseja transportar para o objeto clonado.
+     *
+     * Por exemplo, quando uma página é clonada:
+     * - Recebe um novo título "Cópia de ...".
+     * - O autor da página permanece o mesmo. Portanto, deixamos a referência ao objeto existente ao adicionar
+     * a página clonada para a lista de páginas do autor.
+     * - Não transportamos os comentários da página antiga.
+     * - Também anexamos um novo objeto de data à página.
      */
     public function __clone()
     {
-        $this->component = clone $this->component;
-
-        // A clonagem de um objeto que possui um objeto aninhado com referência anterior requer tratamento especial.
-        // Depois que a clonagem for concluída, o objeto aninhado deve apontar para o objeto clonado, em vez do original
-        // objeto.
-        $this->circularReference = clone $this->circularReference;
-        $this->circularReference->prototype = $this;
+        $this->title = "Cópia de " . $this->title;
+        $this->author->addToPage($this);
+        $this->comments = [];
+        $this->date = new \DateTime();
     }
 }
 
-class ComponentWithBackReference
+class Author
 {
-    public $prototype;
+    private $name;
 
     /**
-     * Observe que o construtor não será executado durante a clonagem.
-     * Se você tem uma lógica complexa dentro do construtor, você pode precisar executá-la no método `__clone` também.
+     * @var Page[]
      */
-    public function __construct(Prototype $prototype)
+    private $pages = [];
+
+    public function __construct(string $name)
     {
-        $this->prototype = $prototype;
+        $this->name = $name;
+    }
+
+    public function addToPage(Page $page): void
+    {
+        $this->pages[] = $page;
     }
 }
 
+/**
+ * O código do cliente.
+ */
 function clientCode()
 {
-    $p1 = new Prototype();
-    $p1->primitive = 245;
-    $p1->component = new \DateTime();
-    $p1->circularReference = new ComponentWithBackReference($p1);
+    $author = new Author("John Smith");
+    $page = new Page("Dica do dia", "Mantenha a calma e continue.", $author);
 
-    $p2 = clone $p1;
-    if ($p1->primitive === $p2->primitive) {
-        echo "Os valores de campo primitivos foram transportados para um clone.<br>";
-    } else {
-        echo "Os valores do campo primitivo não foram copiados.<br>";
-    }
-    if ($p1->component === $p2->component) {
-        echo "O componente simples não foi clonado.<br>";
-    } else {
-        echo "O componente simples foi clonado.<br>";
-    }
+    $page->addComment("Nice tip, thanks!");
 
-    if ($p1->circularReference === $p2->circularReference) {
-        echo "O componente com referência anterior não foi clonado.<br>";
-    } else {
-        echo "O componente com referência anterior foi clonado.<br>";
-    }
-
-    if ($p1->circularReference->prototype === $p2->circularReference->prototype) {
-        echo "O componente com referência anterior está vinculado ao objeto original.<br>";
-    } else {
-        echo "O componente com referência anterior está vinculado ao clone.<br>";
-    }
+    $draft = clone $page;
+    echo "Despejo do clone. Observe que o autor agora está se referindo a dois objetos.<br><br>";
+    echo '<pre>';
+    print_r($draft);
 }
 
 clientCode();
-
 ~~~~
 Fonte: https://refactoring.guru/pt-br/design-patterns/prototype/php/example#lang-features
