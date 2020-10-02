@@ -1,29 +1,27 @@
 <?php
 
-use App\Criacao\FactoryMethod\Creator;
-use App\Criacao\FactoryMethod\ConcreteCreator1;
-use App\Criacao\FactoryMethod\ConcreteCreator2;
+use App\Criacao\FactoryMethod\FacebookPoster;
+use App\Criacao\FactoryMethod\LinkedInPoster;
+use App\Criacao\FactoryMethod\SocialNetworkPoster;
 
 require __DIR__.'/../../bootstrap.php';
 
 /**
- * O código do cliente funciona com uma instância de um criador concreto, embora por meio de sua interface base.
- * Contanto que o cliente continue trabalhando com o criador por meio da interface base, você pode passá-lo para
- * qualquer subclasse do criador.
+ * O código do cliente pode funcionar com qualquer subclasse de SocialNetworkPoster, pois não depende de classes concretas.
  */
-function clientCode(Creator $creator)
+function clientCode(SocialNetworkPoster $creator)
 {
-    // ...
-    echo "Cliente: Não conhece a classe do criador, mas ainda funciona.<br>". $creator->someOperation();
-    // ...
+    $creator->post("Olá Mundo!");
+    $creator->post("Eu comi um hambúrguer grande esta manhã!");
 }
 
 /**
- * O aplicativo escolhe o tipo de criador, dependendo da configuração ou ambiente.
+ * Durante a fase de inicialização, o aplicativo pode decidir com qual rede social deseja trabalhar, criar um objeto de
+ * a subclasse apropriada e passe-a para o código do cliente.
  */
-echo "App: Lançado com o ConcreteCreator1.<br>";
-clientCode(new ConcreteCreator1());
+echo "Testando ConcreteCreator1:<br>";
+clientCode(new FacebookPoster("john_smith", "******"));
 echo "<br><br>";
 
-echo "App: Lançado com o ConcreteCreator2.<br>";
-clientCode(new ConcreteCreator2());
+echo "Testando ConcreteCreator2:<br>";
+clientCode(new LinkedInPoster("john_smith@example.com", "******"));

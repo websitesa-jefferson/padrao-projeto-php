@@ -20,104 +20,167 @@ Permite que a aplicação final implemente o suporte aos objetos necessários.
 
 ~~~~
 /**
- * A classe Creator declara o método de fábrica que deve retornar um objeto de uma classe Product.
- * As subclasses do Criador geralmente fornecem a implementação desse método.
+ * O Criador declara um método de fábrica que pode ser usado como uma substituição para as chamadas diretas do
+ * construtor de produtos, por exemplo:
+ *
+ * - Antes: $p = new FacebookConnector();
+ * - Depois de: $p = $this->getSocialNetwork;
+ *
+ * Isso permite alterar o tipo de produto que está sendo criado pelas subclasses de SocialNetworkPoster.
  */
-abstract class Creator
+abstract class SocialNetworkPoster
 {
     /**
-     * Observe que o Criador também pode fornecer alguma implementação padrão do método de fábrica.
+     * O método de fábrica real.
+     * Observe que ele retorna o conector abstrato.
+     * Isso permite que as subclasses retornem quaisquer conectores concretos sem quebrar o contrato da superclasse.
      */
-    abstract public function factoryMethod(): Product;
+    abstract public function getSocialNetwork(): SocialNetworkConnector;
 
     /**
-     * Observe também que, apesar do nome, a principal responsabilidade do Criador não é criar produtos.
-     * Normalmente, ele contém alguma lógica de negócios central que depende de objetos Produto, retornados pelo método de fábrica.
-     * As subclasses podem alterar indiretamente essa lógica de negócios, substituindo o método de fábrica e retornando um diferente
-     * tipo de produto dele.
+     * Quando o método de fábrica é usado dentro da lógica de negócios do Criador, as subclasses podem alterar a lógica
+     * indiretamente, retornando diferentes tipos de conector do método de fábrica.
      */
-    public function someOperation(): string
+    public function post($content): void
     {
-        // Chame o método de fábrica para criar um objeto Produto.
-        $product = $this->factoryMethod();
-        // Now, use the product.
-        $result = "Criador: o mesmo código do criador acabou de trabalhar com ". $product->operation();
-
-        return $result;
+        // Chame o método de fábrica para criar um objeto Produto ...
+        $network = $this->getSocialNetwork();
+        // ...em seguida, use-o como quiser.
+        $network->logIn();
+        $network->createPost($content);
+        $network->logout();
     }
 }
 
 /**
- * Os criadores concretos substituem o método de fábrica para alterar o tipo do produto resultante.
+ * Este Concrete Creator é compatível com o Facebook.
+ * Lembre-se de que essa classe também herda o método 'post' da classe pai.
+ * Os Criadores Concretos são as classes que o Cliente realmente usa.
  */
-class ConcreteCreator1 extends Creator
+class FacebookPoster extends SocialNetworkPoster
 {
-    /**
-     * Observe que a assinatura do método ainda usa o tipo de produto abstrato, mesmo que o produto concreto seja
-     * realmente retornado do método.
-     * Desta forma, o Criador pode permanecer independente de classes de produtos concretas.
-     */
-    public function factoryMethod(): Product
+    private $login, $password;
+
+    public function __construct(string $login, string $password)
     {
-        return new ConcreteProduct1();
+        $this->login = $login;
+        $this->password = $password;
     }
-}
 
-class ConcreteCreator2 extends Creator
-{
-    public function factoryMethod(): Product
+    public function getSocialNetwork(): SocialNetworkConnector
     {
-        return new ConcreteProduct2();
-    }
-}
-
-/**
- * A interface do produto declara as operações que todos os produtos concretos devem implementar.
- */
-interface Product
-{
-    public function operation(): string;
-}
-
-/**
- * Os Produtos Concretos fornecem várias implementações da interface do Produto.
- */
-class ConcreteProduct1 implements Product
-{
-    public function operation(): string
-    {
-        return "{Resultado do ConcreteProduct1}";
-    }
-}
-
-class ConcreteProduct2 implements Product
-{
-    public function operation(): string
-    {
-        return "{Resultado do ConcreteProduct2}";
+        return new FacebookConnector($this->login, $this->password);
     }
 }
 
 /**
- * O código do cliente funciona com uma instância de um criador concreto, embora por meio de sua interface base.
- * Contanto que o cliente continue trabalhando com o criador por meio da interface base, você pode passá-lo para
- * qualquer subclasse do criador.
+ * Este Concrete Creator oferece suporte ao LinkedIn.
  */
-function clientCode(Creator $creator)
+class LinkedInPoster extends SocialNetworkPoster
 {
-    // ...
-    echo "Cliente: Não conhece a classe do criador, mas ainda funciona.<br>". $creator->someOperation();
-    // ...
+    private $email, $password;
+
+    public function __construct(string $email, string $password)
+    {
+        $this->email = $email;
+        $this->password = $password;
+    }
+
+    public function getSocialNetwork(): SocialNetworkConnector
+    {
+        return new LinkedInConnector($this->email, $this->password);
+    }
 }
 
 /**
- * O aplicativo escolhe o tipo de criador, dependendo da configuração ou ambiente.
+ * A interface do produto declara o comportamento de vários tipos de produtos.
  */
-echo "App: Lançado com o ConcreteCreator1.<br>";
-clientCode(new ConcreteCreator1());
+interface SocialNetworkConnector
+{
+    public function logIn(): void;
+
+    public function logOut(): void;
+
+    public function createPost($content): void;
+}
+
+/**
+ * Este produto concreto implementa a API do Facebook.
+ */
+class FacebookConnector implements SocialNetworkConnector
+{
+    private $login, $password;
+
+    public function __construct(string $login, string $password)
+    {
+        $this->login = $login;
+        $this->password = $password;
+    }
+
+    public function logIn(): void
+    {
+        echo "Enviar solicitação de API HTTP para login do usuário $this->login com senha $this->password<br>";
+    }
+
+    public function logOut(): void
+    {
+        echo "Enviar solicitação de API HTTP para logout do usuário $this->login<br>";
+    }
+
+    public function createPost($content): void
+    {
+        echo "Envie solicitações HTTP API para criar uma postagem na linha do tempo do Facebook.<br>";
+    }
+}
+
+/**
+ * Este produto concreto implementa a API do LinkedIn.
+ */
+class LinkedInConnector implements SocialNetworkConnector
+{
+    private $email, $password;
+
+    public function __construct(string $email, string $password)
+    {
+        $this->email = $email;
+        $this->password = $password;
+    }
+
+    public function logIn(): void
+    {
+        echo "Enviar solicitação de API HTTP para login do usuário $this->email com senha $this->password<br>";
+    }
+
+    public function logOut(): void
+    {
+        echo "Enviar solicitação de API HTTP para logout do usuário $this->email<br>";
+    }
+
+    public function createPost($content): void
+    {
+        echo "Envie solicitações HTTP API para criar uma postagem na linha do tempo do LinkedIn.<br>";
+    }
+}
+
+/**
+ * O código do cliente pode funcionar com qualquer subclasse de SocialNetworkPoster, pois não depende de classes concretas.
+ */
+function clientCode(SocialNetworkPoster $creator)
+{
+    $creator->post("Olá Mundo!");
+    $creator->post("Eu comi um hambúrguer grande esta manhã!");
+}
+
+/**
+ * Durante a fase de inicialização, o aplicativo pode decidir com qual rede social deseja trabalhar, criar um objeto de
+ * a subclasse apropriada e passe-a para o código do cliente.
+ */
+echo "Testando ConcreteCreator1:<br>";
+clientCode(new FacebookPoster("john_smith", "******"));
 echo "<br><br>";
 
-echo "App: Lançado com o ConcreteCreator2.<br>";
-clientCode(new ConcreteCreator2());
+echo "Testando ConcreteCreator2:<br>";
+clientCode(new LinkedInPoster("john_smith@example.com", "******"));
+
 ~~~~
 Fonte: https://refactoring.guru/pt-br/design-patterns/factory-method/php/example#lang-features
