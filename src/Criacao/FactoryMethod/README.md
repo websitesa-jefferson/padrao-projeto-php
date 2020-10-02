@@ -181,6 +181,5 @@ echo "<br><br>";
 
 echo "Testando ConcreteCreator2:<br>";
 clientCode(new LinkedInPoster("john_smith@example.com", "******"));
-
 ~~~~
 Fonte: https://refactoring.guru/pt-br/design-patterns/factory-method/php/example#lang-features
