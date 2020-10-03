@@ -16,66 +16,112 @@ Este padrão é útil quando precisamos da comunicação entre classess que não
 
 ~~~~
 /**
- * O destino define a interface específica do domínio usada pelo código do cliente.
+ * A interface Target representa a interface que as classes de seu aplicativo já seguem.
  */
-class Target
+interface Notification
 {
-    public function request(): string
+    public function send(string $title, string $message);
+}
+
+/**
+ * Aqui está um exemplo da classe existente que segue a interface Target.
+ *
+ * A verdade é que muitos aplicativos reais podem não ter essa interface claramente definida.
+ * Se você estiver nesse barco, sua melhor aposta seria estender o adaptador de uma das classes existentes em seu aplicativo.
+ * Se isso for estranho (por exemplo, SlackNotification não parece uma subclasse de EmailNotification), então
+ * extrair uma interface deve ser o primeiro passo.
+ */
+class EmailNotification implements Notification
+{
+    private $adminEmail;
+
+    public function __construct(string $adminEmail)
     {
-        return "Alvo: o comportamento do alvo padrão.";
+        $this->adminEmail = $adminEmail;
+    }
+
+    public function send(string $title, string $message): void
+    {
+        mail($this->adminEmail, $title, $message);
+        echo "Email enviado com título '$title' para '{$this->adminEmail}' isso diz '$message'.";
     }
 }
 
 /**
- * O Adaptee contém alguns comportamentos úteis, mas sua interface é incompatível com o código do cliente existente.
- * O Adaptee precisa de alguma adaptação antes que o código do cliente possa usá-lo.
+ * O Adaptee é uma classe útil, incompatível com a interface Target.
+ * Você não pode simplesmente entrar e alterar o código da classe para seguir a interface de destino, pois o código pode ser
+ * fornecido por uma biblioteca de terceiros.
  */
-class Adaptee
+class SlackApi
 {
-    public function specificRequest(): string
+    private $login;
+    private $apiKey;
+
+    public function __construct(string $login, string $apiKey)
     {
-        return ".eetpadA od laicepse otnematropmoC";
+        $this->login = $login;
+        $this->apiKey = $apiKey;
+    }
+
+    public function logIn(): void
+    {
+        // Envie a solicitação de autenticação para o serviço da Web do Slack.
+        echo "Conectado a uma conta slack '{$this->login}'.<br>";
+    }
+
+    public function sendMessage(string $chatId, string $message): void
+    {
+        // Envie uma solicitação de postagem de mensagem para o serviço da Web do Slack.
+        echo "Postado a seguinte mensagem no '$chatId' bate-papo: '$message'.<br>";
     }
 }
 
 /**
- * O Adaptador torna a interface do Adaptee compatível com a interface do Destino.
+ * O Adaptador é uma classe que vincula a interface Target e a classe Adaptee.
+ * Nesse caso, permite que o aplicativo envie notificações usando a API Slack.
  */
-class Adapter extends Target
+class SlackNotification implements Notification
 {
-    private $adaptee;
+    private $slack;
+    private $chatId;
 
-    public function __construct(Adaptee $adaptee)
+    public function __construct(SlackApi $slack, string $chatId)
     {
-        $this->adaptee = $adaptee;
+        $this->slack = $slack;
+        $this->chatId = $chatId;
     }
 
-    public function request(): string
+    /**
+     * Um adaptador não é apenas capaz de adaptar interfaces, mas também pode converter dados de entrada para o formato
+     * exigido pelo Adaptado.
+     */
+    public function send(string $title, string $message): void
     {
-        return "Adaptador: (TRADUZIDO) " . strrev($this->adaptee->specificRequest());
+        $slackMessage = "#" . $title . "# " . strip_tags($message);
+        $this->slack->logIn();
+        $this->slack->sendMessage($this->chatId, $slackMessage);
     }
 }
 
 /**
- * O código do cliente oferece suporte a todas as classes que seguem a interface de destino.
+ * O código do cliente pode funcionar com qualquer classe que siga a interface Target.
  */
-function clientCode(Target $target)
+function clientCode(Notification $notification)
 {
-    echo $target->request();
+    echo $notification->send("Site está fora do ar!",
+        "<strong style='color:red;font-size: 50px;'>Alerta!</strong> " .
+        "Nosso site não está respondendo. Ligue para os administradores e abra!");
 }
 
-echo "Cliente: Posso trabalhar muito bem com os objetos Alvo:<br>";
-$target = new Target();
-clientCode($target);
+echo "O código do cliente foi projetado corretamente e funciona com notificações por e-mail:<br>";
+$notification = new EmailNotification("developers@example.com");
+clientCode($notification);
 echo "<br><br>";
 
-$adaptee = new Adaptee();
-echo "Cliente: A classe Adaptee tem uma interface estranha. Veja, eu não entendo isso:<br>";
-echo "Adaptee: " . $adaptee->specificRequest();
-echo "<br><br>";
 
-echo "Cliente: Mas posso trabalhar com isso por meio do Adaptador:<br>";
-$adapter = new Adapter($adaptee);
-clientCode($adapter);
+echo "O mesmo código do cliente pode funcionar com outras classes via adaptador:<br>";
+$slackApi = new SlackApi("example.com", "XXXXXXXX");
+$notification = new SlackNotification($slackApi, "Example.com Developers");
+clientCode($notification);
 ~~~~
 Fonte: https://refactoring.guru/pt-br/design-patterns/adapter/php/example#lang-features

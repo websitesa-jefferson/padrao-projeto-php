@@ -1,29 +1,29 @@
 <?php
 
-use App\Estrutura\Adapter\Target;
-use App\Estrutura\Adapter\Adaptee;
-use App\Estrutura\Adapter\Adapter;
+use App\Estrutura\Adapter\SlackApi;
+use App\Estrutura\Adapter\Notification;
+use App\Estrutura\Adapter\EmailNotification;
+use App\Estrutura\Adapter\SlackNotification;
 
 require __DIR__.'/../../bootstrap.php';
 
 /**
- * O código do cliente oferece suporte a todas as classes que seguem a interface de destino.
+ * O código do cliente pode funcionar com qualquer classe que siga a interface Target.
  */
-function clientCode(Target $target)
+function clientCode(Notification $notification)
 {
-    echo $target->request();
+    echo $notification->send("Site está fora do ar!",
+        "<strong style='color:red;font-size: 50px;'>Alerta!</strong> " .
+        "Nosso site não está respondendo. Ligue para os administradores e abra!");
 }
 
-echo "Cliente: Posso trabalhar muito bem com os objetos Alvo:<br>";
-$target = new Target();
-clientCode($target);
+echo "O código do cliente foi projetado corretamente e funciona com notificações por e-mail:<br>";
+$notification = new EmailNotification("developers@example.com");
+clientCode($notification);
 echo "<br><br>";
 
-$adaptee = new Adaptee();
-echo "Cliente: A classe Adaptee tem uma interface estranha. Veja, eu não entendo isso:<br>";
-echo "Adaptee: " . $adaptee->specificRequest();
-echo "<br><br>";
 
-echo "Cliente: Mas posso trabalhar com isso por meio do Adaptador:<br>";
-$adapter = new Adapter($adaptee);
-clientCode($adapter);
+echo "O mesmo código do cliente pode funcionar com outras classes via adaptador:<br>";
+$slackApi = new SlackApi("example.com", "XXXXXXXX");
+$notification = new SlackNotification($slackApi, "Example.com Developers");
+clientCode($notification);
