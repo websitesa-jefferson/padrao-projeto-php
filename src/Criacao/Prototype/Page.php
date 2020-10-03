@@ -44,8 +44,8 @@ class Page
      *
      * Por exemplo, quando uma página é clonada:
      * - Recebe um novo título "Cópia de ...".
-     * - O autor da página permanece o mesmo. Portanto, deixamos a referência ao objeto existente ao adicionar
-     * a página clonada para a lista de páginas do autor.
+     * - O autor da página permanece o mesmo.
+     * - Portanto, deixamos a referência ao objeto existente ao adicionar a página clonada para a lista de páginas do autor.
      * - Não transportamos os comentários da página antiga.
      * - Também anexamos um novo objeto de data à página.
      */

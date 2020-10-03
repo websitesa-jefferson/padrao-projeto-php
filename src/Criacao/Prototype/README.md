@@ -13,7 +13,7 @@ Permite a implementação de variações de uma classe sem o uso de subclasses, 
 
 ##### Aplicabilidade
 - As classes a serem instanciadas são especificadas em tempo de execução;
-- Quando a instância de uma classe pode ter diferentes estados;
+- Quando a instância de uma classe pode ter diferentes estados.
 
 ~~~~
 /**
@@ -58,8 +58,8 @@ class Page
      *
      * Por exemplo, quando uma página é clonada:
      * - Recebe um novo título "Cópia de ...".
-     * - O autor da página permanece o mesmo. Portanto, deixamos a referência ao objeto existente ao adicionar
-     * a página clonada para a lista de páginas do autor.
+     * - O autor da página permanece o mesmo.
+     * - Portanto, deixamos a referência ao objeto existente ao adicionar a página clonada para a lista de páginas do autor.
      * - Não transportamos os comentários da página antiga.
      * - Também anexamos um novo objeto de data à página.
      */
@@ -97,14 +97,14 @@ class Author
  */
 function clientCode()
 {
+    echo '<pre>';
     $author = new Author("John Smith");
     $page = new Page("Dica do dia", "Mantenha a calma e continue.", $author);
 
-    $page->addComment("Nice tip, thanks!");
+    $page->addComment("Boa dica, obrigado!");
 
     $draft = clone $page;
-    echo "Despejo do clone. Observe que o autor agora está se referindo a dois objetos.<br><br>";
-    echo '<pre>';
+    echo "Despejo do clone.<br>Observe que o autor agora está se referindo a dois objetos.<br><br>";
     print_r($draft);
 }
 
