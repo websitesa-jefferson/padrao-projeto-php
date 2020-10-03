@@ -1,7 +1,7 @@
 ## PADRÃO PROTOTYPE
 
 ##### Objetivo
-Espeficiar tipos de objetos através de uma instância-protótipo e criar novos objetos através da cópia dessa instancia.
+Permitir que você copie objetos existentes sem fazer seu código ficar dependente de suas classes.
 
 ##### Contexto
 Permite a implementação de variações de uma classe sem o uso de subclasses, através da criação de instâncias-protótipo com características específicas pré-definidas.

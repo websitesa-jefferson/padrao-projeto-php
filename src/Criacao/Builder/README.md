@@ -1,7 +1,8 @@
 ## PADRÃO BUILDER
 
 ##### Objetivo
-Separar a construção de um objeto complexo da sua representação, de modo que o mesmo processo de construção possa criar diferentes representações.
+Permitir construir objetos complexos passo a passo.  
+O padrão permite produzir diferentes tipos e representações de um objeto usando o mesmo código de construção.
 
 ##### Contexto
 Sistema capaz de gerar ações indeterminadas para uma única aplicação, utilizam a estrutura modular deste padrão para permitir a implementação do soluções alternativas que utilizem de uma fonte única.

@@ -1,7 +1,7 @@
 ## PADRÃO ABSTRACT FACTORY
 
 ##### Objetivo
-Fornecer uma interface para criação de grupos de objetos relacionados aos dependentes sem especificar suas classes concretas.
+Permitir que você produza famílias de objetos relacionados sem ter que especificar suas classes concretas.
 
 ##### Contexto
 Produtos portáveis utilizam o conceito abstrato deste padrão para desvincular código fundamental da aplicação de recursos que são dependentes da plataforma.

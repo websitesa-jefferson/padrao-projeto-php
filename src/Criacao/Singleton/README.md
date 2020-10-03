@@ -1,7 +1,7 @@
 ## PADRÃO SINGLETON
 
 ##### Objetivo
-Garantir que uma classe tenha somente uma instância e fornecer um ponto global de acesso a ela.
+Permitir a você garantir que uma classe tem apenas uma instância, enquanto provê um ponto de acesso global para esta instância.
 
 ##### Contexto
 Restringir o acesso a recursos limitados e compartilhados pelo sistema, exemplo: classe de log.

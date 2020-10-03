@@ -1,7 +1,7 @@
 ## PADRÃO FACTORY METHOD
 
 ##### Objetivo
-Definir uma interface para criação de objeto que permita que as subclasses decidam qual classe será instanciada.
+Fornecer uma interface para criar objetos em uma superclasse, mas permite que as subclasses alterem o tipo de objetos que serão criados.
 
 ##### Contexto
 Sistemas que manipulam um número variável de tipos de objetos podem utilizar este modelo devido à sua flexibilidade.

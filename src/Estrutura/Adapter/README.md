@@ -1,7 +1,7 @@
 ## PADRÃO ADAPTER
 
 ##### Objetivo
-É usado quando queremos converter a interface de uma classe em outra interface utilizada pelo cliente.
+Permitir a colaboração de objetos de interfaces incompatíveis.
 
 ##### Contexto
 Este padrão é útil quando precisamos da comunicação entre classess que não poderiam trabalhar juntas devido a incompatibilidade de suas interfaces.
